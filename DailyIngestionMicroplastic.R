@@ -34,8 +34,6 @@ totalpreyMn_Var <- 0.7*(KrillMn_SD^2 + (KrillMn_Avg - totalpreyMn_Avg)^2) +
 totalpreyMn_SD <- sqrt(totalpreyMn_Var)
 
 
-
-
 # Mean and SD for the ratio of feces to prey (d.w.)
 ratio_with_error <- function(mean_x, sd_x, mean_y, sd_y) {
   mean_z <- mean_x / mean_y
@@ -58,11 +56,12 @@ MPpergrampreywet<-(fecalMPdry*PreyFecesRatio)*(rnorm(1000, mean = mean.dwprey, s
 mean(MPpergrampreywet)
 
 # Next, estimate consumption. Formula From Witteveen et al., 2006
-m<-30000
-K <- 0.88*0.3 + 0.74*0.7 
-E<- 192*(m^0.75)
-I <- (E/K)*(1/1000)
-r <- I*1000
+
+m<-30000 # mass of whale (kg)
+K <- 0.88*0.3 + 0.74*0.7 # Energy density of prey (kcal/grams)
+E<- 192*(m^0.75) # Metabolic rate of whale (kcal/day)
+I <- (E/K)*(1/1000) # Daily prey consumption (kg)
+r <- I*1000 # Daily prey consumption (g)
 
 ((r/1000)/m)*100 # Whales feeding on 70% euphausids and 30% herring eat 1.87% bw per day
 
@@ -74,10 +73,7 @@ hist(MPingestedperday)
 quantile.95MPingestedperday<-quantile(MPingestedperday, probs = c(0.05, 0.95))
 
 
-#Bootstrap resampling (n = 1000) yielded a mean ingestion estimate of 418,227 MPs/day 
-#with low bias and a standard error of 12,298 MPs/day. The 95% percentile confidence interval 
-#ranged from 396,731 to 424,217 MPs/day, indicating relatively low uncertainty and high stability of 
-#the estimate.
+#Bootstrap resampling (n = 1000) to calculate 95% CI
 
 boot_mean <- function(data, i) mean(data[i], na.rm = TRUE)
 boot_res <- boot(MPingestedperday, boot_mean, R = 1000)
@@ -87,11 +83,11 @@ ci_lower <- conf[1, ncol(conf)-1]
 ci_upper <- conf[1, ncol(conf)]
 
 # 30,000 kg HB feeding on %70 krill and 30% juv herring  may ingest mean 418227.2 MP a day (95% CI, 401190.5-436171.9).
+
 #Mass ingested estimate
 # Density of cellulose = 1.5 g/cm³ = 1500 kg/m³
-# Average MP isolated was 900  micron x 30 micron, 72 % cellulose.
-# Average 0.95 micrograms per MP
-#Upper quantile of highest scanrio (100% krill) = 1,094,463.5 / day
+# Average MP isolated was 841.53 μm long and 29.67 wide, mostly cellulose.
+# Average 0.89 micrograms per MP
 
 meanmassingested<-(9.54*10^-7)*mean(MPingestedperday) # mean = 0.3989887 g/day
 (9.54*10^-7)*ci_lower #5% = 0.3827357  g/day
